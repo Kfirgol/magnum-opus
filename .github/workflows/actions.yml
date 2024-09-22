@@ -1,0 +1,15 @@
+name: EKS
+on: [push]
+
+jobs:
+  eks-infrastracture:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: terraform-apply
+        uses: dflook/terraform-apply@v1.44.0
+        with:
+          auto_approve: true
+          var_file: "secret.tfvars"    
