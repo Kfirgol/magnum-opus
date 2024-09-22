@@ -2,7 +2,7 @@ name: EKS
 on: [push]
 
 jobs:
-  EKS Infrastracture:
+  eks-infrastracture:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
