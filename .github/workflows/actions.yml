@@ -12,4 +12,4 @@ jobs:
         uses: dflook/terraform-apply@v1.44.0
         with:
           auto_approve: true
-          var_file: "secret.tfvars"    
+          # var_file: "secret.tfvars"    
