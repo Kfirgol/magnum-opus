@@ -28,10 +28,10 @@ jobs:
         
       - name: Terraform Apply
         run: |
-          terraform state pull
           terraform init
           # terraform refresh
-          terraform apply --auto-approve
+          terraform state pull
+          # terraform apply --auto-approve
 
   install-nginx:
     needs: [eks-infrastracturet]
