@@ -28,9 +28,9 @@ jobs:
         
       - name: Terraform Apply
         run: |
+          terraform state pull
           terraform init
           # terraform refresh
-          terraform state pull
           terraform apply --auto-approve
 
   install-nginx:
