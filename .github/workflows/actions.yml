@@ -19,10 +19,15 @@ jobs:
           role-duration-seconds: 1200
           # role-session-name: RoleSessionName
         
+      # - name: Terraform Apply
+      #   uses: dflook/terraform-apply@v1.44.0
+      #   with:
+      #     auto_approve: true
+      - name: HashiCorp - Setup Terraform
+        uses: hashicorp/setup-terraform@v3.1.2
+        
       - name: Terraform Apply
-        uses: dflook/terraform-apply@v1.44.0
-        with:
-          auto_approve: true
+        run: terraform apply --auto-approve
 
   install-nginx:
     needs: [eks-infrastracturet]
@@ -46,9 +51,6 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v4
         
-        - name: Kubernetes Terraform Apply 
-          uses: dflook/terraform-apply@v1.44.0
-          with:
-            auto_approve: true
-            var_file: "secret.tfvars"    
+        - name: Terraform Apply Resources
+          run: terraform apply --auto-approve --var postgres_username=${{ secrets.POSTGRES_USERNAME }} --var postgres_password=${{ secrets.POSTGRES_PASSWORD }}
 
