@@ -27,11 +27,10 @@ jobs:
         uses: hashicorp/setup-terraform@v3.1.2
         
       - name: Terraform Apply
-        run: |
-          terraform init
+        run: terraform init
           # terraform refresh
-          terraform state pull
-          # terraform apply --auto-approve
+      - run: terraform state pull
+      - run: terraform apply --auto-approve
 
   install-nginx:
     needs: [eks-infrastracturet]
