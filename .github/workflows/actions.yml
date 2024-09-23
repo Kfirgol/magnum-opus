@@ -2,7 +2,7 @@ name: EKS
 on: [push]
 
 jobs:
-  eks-infrastracturet:
+  eks-infrastructure:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,13 +27,12 @@ jobs:
         uses: hashicorp/setup-terraform@v3.1.2
         
       - name: Terraform Apply
-        run: terraform init
-          # terraform refresh
-      - run: terraform state pull
-      - run: terraform apply --auto-approve
+        run: |
+          terraform init
+          terraform apply --auto-approve
 
   install-nginx:
-    needs: [eks-infrastracturet]
+    needs: [eks-infrastructure]
     runs-on: ubuntu-latest
     defaults:
       run:    
@@ -45,7 +44,7 @@ jobs:
         - run: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/aws/deploy.yaml
     
   api-objects:
-    needs: [eks-infrastracturet]
+    needs: [eks-infrastructure]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -57,7 +56,5 @@ jobs:
         - name: Terraform Apply Resources
           run: |
             terraform init -reconfigure
-            terraform state pull
-            # terraform refresh
             terraform apply --auto-approve --var postgres_username=${{ secrets.POSTGRES_USERNAME }} --var postgres_password=${{ secrets.POSTGRES_PASSWORD }}
 
