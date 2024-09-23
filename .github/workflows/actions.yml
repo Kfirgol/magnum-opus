@@ -25,6 +25,7 @@ jobs:
           auto_approve: true
 
   install-nginx:
+    needs: [eks-infrastracturet]
     runs-on: ubuntu-latest
     defaults:
       run:    
@@ -36,6 +37,7 @@ jobs:
         - run: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/aws/deploy.yaml
     
   api-objects:
+    needs: [eks-infrastracturet]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -49,7 +51,4 @@ jobs:
           with:
             auto_approve: true
             var_file: "secret.tfvars"    
-
-        
-
 
