@@ -2,7 +2,7 @@ name: EKS
 on: [push]
 
 jobs:
-  eks-infrastracture:
+  eks-infrastracturet:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,4 +23,33 @@ jobs:
         uses: dflook/terraform-apply@v1.44.0
         with:
           auto_approve: true
-          # var_file: "secret.tfvars"    
+
+  install-nginx:
+    runs-on: ubuntu-latest
+    defaults:
+      run:    
+        working-directory: ./kubernetes
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+
+        - run: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/aws/deploy.yaml
+    
+  api-objects:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./kubernetes 
+    steps: 
+        - name: Checkout
+          uses: actions/checkout@v4
+        
+        - name: Kubernetes Terraform Apply 
+          uses: dflook/terraform-apply@v1.44.0
+          with:
+            auto_approve: true
+            var_file: "secret.tfvars"    
+
+        
+
+
