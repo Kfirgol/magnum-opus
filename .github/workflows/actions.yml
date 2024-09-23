@@ -27,7 +27,9 @@ jobs:
         uses: hashicorp/setup-terraform@v3.1.2
         
       - name: Terraform Apply
-        run: terraform apply --auto-approve
+        run: |
+          terraform init
+          terraform apply --auto-approve
 
   install-nginx:
     needs: [eks-infrastracturet]
@@ -52,5 +54,7 @@ jobs:
           uses: actions/checkout@v4
         
         - name: Terraform Apply Resources
-          run: terraform apply --auto-approve --var postgres_username=${{ secrets.POSTGRES_USERNAME }} --var postgres_password=${{ secrets.POSTGRES_PASSWORD }}
+          run: |
+            terraform init -reconfigure
+            terraform apply --auto-approve --var postgres_username=${{ secrets.POSTGRES_USERNAME }} --var postgres_password=${{ secrets.POSTGRES_PASSWORD }}
 
