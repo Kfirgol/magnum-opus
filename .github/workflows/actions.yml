@@ -29,6 +29,7 @@ jobs:
       - name: Terraform Apply
         run: |
           terraform init
+          terraform refresh
           terraform apply --auto-approve
 
   install-nginx:
@@ -56,5 +57,6 @@ jobs:
         - name: Terraform Apply Resources
           run: |
             terraform init -reconfigure
+            terraform refresh
             terraform apply --auto-approve --var postgres_username=${{ secrets.POSTGRES_USERNAME }} --var postgres_password=${{ secrets.POSTGRES_PASSWORD }}
 
