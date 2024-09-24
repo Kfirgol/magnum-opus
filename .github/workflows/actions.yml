@@ -15,7 +15,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
           role-to-assume: "arn:aws:iam::590183844603:role/AmazonEKSClusterPolicy"
-          role-duration-seconds: 10000
+          role-duration-seconds: 1200
+        
 
       - name: HashiCorp - Setup Terraform
         uses: hashicorp/setup-terraform@v3.1.2
@@ -25,31 +26,33 @@ jobs:
           terraform init
           terraform apply --auto-approve
 
-  install-nginx:
+  deploy-api-objects:
     needs: [eks-infrastructure]
     runs-on: ubuntu-latest
     defaults:
       run:    
         working-directory: ./kubernetes
     steps:
-        - name: Checkout
-          uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          role-to-assume: "arn:aws:iam::590183844603:role/AmazonEKSClusterPolicy"
+          role-duration-seconds: 1200
 
-        - run: |
-            aws eks update-kubeconfig --region us-east-1 --name commit-cluster
-            kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/aws/deploy.yaml
+      - name: Checkout
+        uses: actions/checkout@v4
     
-  api-objects:
-    needs: [eks-infrastructure]
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./kubernetes 
-    steps: 
-        - name: Checkout
-          uses: actions/checkout@v4
+      - name: Deploy Nginx
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name commit-cluster
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/aws/deploy.yaml
+      
+      - name: Terraform Apply Resources
+        run: |
+          terraform init
+          terraform apply --auto-approve --var postgres_username=${{ secrets.POSTGRES_USERNAME }} --var postgres_password=${{ secrets.POSTGRES_PASSWORD }}
+
         
-        - name: Terraform Apply Resources
-          run: |
-            terraform init
-            terraform apply --auto-approve --var postgres_username=${{ secrets.POSTGRES_USERNAME }} --var postgres_password=${{ secrets.POSTGRES_PASSWORD }}
