@@ -53,6 +53,6 @@ jobs:
       - name: Terraform Apply Resources
         run: |
           terraform init
-          terraform apply --auto-approve --var postgres_username=${{ secrets.POSTGRES_USERNAME }} --var postgres_password=${{ secrets.POSTGRES_PASSWORD }}
+          terraform apply --auto-approve --var postgres_username=${{ secrets.POSTGRES_USER }} --var postgres_password=${{ secrets.POSTGRES_PASSWORD }}
 
         
