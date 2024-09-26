@@ -58,6 +58,18 @@ module "eks" {
         }
       }
     }
+    github-runner = {
+      kubernetes_groups = []
+      principal_arn     = "arn:aws:iam::590183844603:user/github-runner"
+      policy_associations = {
+        cluster_admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type       = "cluster"
+          }
+        }
+      }
+    }
   }
 
   tags = {
