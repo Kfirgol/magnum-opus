@@ -1,13 +1,3 @@
-# resource "kubernetes_ingress_class" "nginx" {
-#   metadata {
-#     name = "nginx"
-#   }
-
-#   spec {
-#       controller = "nginx.org/ingress-controller"
-#   }
-# }
-
 resource "kubernetes_ingress_v1" "crud" {
   metadata {
     name = "crud-ingress"
