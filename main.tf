@@ -30,15 +30,15 @@ module "eks" {
     }
   }
 
-  enable_cluster_creator_admin_permissions = true
+  # enable_cluster_creator_admin_permissions = true
 
   access_entries = {
-    user = {
+    viewer = {
       kubernetes_groups = []
       principal_arn     = "arn:aws:iam::590183844603:user/eks-user"
       policy_associations = {
-        admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
+        viewer = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
           access_scope = {
             namespaces = ["default"]
             type       = "namespace"
@@ -46,15 +46,14 @@ module "eks" {
         }
       }
     }
-    viewer = {
+    root = {
       kubernetes_groups = []
-      principal_arn     = "arn:aws:iam::590183844603:user/eks-viewer"
+      principal_arn     = "arn:aws:iam::590183844603:root"
       policy_associations = {
-        view = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminViewPolicy"
+        cluster_admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
           access_scope = {
-            namespaces = ["default"]
-            type       = "namespace"
+            type       = "cluster"
           }
         }
       }
