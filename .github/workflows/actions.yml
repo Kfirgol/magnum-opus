@@ -48,7 +48,7 @@ jobs:
       - name: Deploy Nginx
         run: |
           aws eks update-kubeconfig --region us-east-1 --name commit-cluster
-          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/aws/deploy.yaml
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/aws/deploy.yaml --validate=false
       
       - name: Terraform Apply Resources
         run: |
