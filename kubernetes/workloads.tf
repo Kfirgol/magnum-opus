@@ -26,7 +26,7 @@ resource "kubernetes_deployment" "crud" {
 
       spec {
         container {
-          image = "public.ecr.aws/o3q3p0r1/crud:latest"
+          image = "public.ecr.aws/o3q3p0r1/crud:moveo"
           name  = "crud"
           port {
             container_port = 5000
