@@ -1,6 +1,3 @@
-# Copyright (c) HashiCorp, Inc.
-# SPDX-License-Identifier: MPL-2.0
-
 variable "region" {
   description = "AWS region"
   type        = string
@@ -10,5 +7,5 @@ variable "region" {
 variable "cluster-name" {
   description = "Name of the EKS cluster"
   type        = string
-  default     = "commit-cluster"
+  default     = "magnum-opus-cluster"
 }

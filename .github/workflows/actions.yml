@@ -1,0 +1,66 @@
+name: EKS
+on: 
+  push: 
+    branches:
+      - main
+      - dev
+
+jobs:
+  # creates the EKS Cluster
+  eks-infrastructure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          role-to-assume: "arn:aws:iam::590183844603:role/AmazonEKSClusterPolicy"
+          role-duration-seconds: 1200
+        
+
+      - name: HashiCorp - Setup Terraform
+        uses: hashicorp/setup-terraform@v3.1.2
+        
+      - name: Terraform Apply
+        run: |
+          terraform init
+          terraform apply --auto-approve
+
+  # Steps here create Kubernetes API resources, with Nginx first
+  deploy-api-objects:
+    needs: [eks-infrastructure]
+    runs-on: ubuntu-latest
+    defaults:
+      run:    
+        working-directory: ./kubernetes
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          role-to-assume: "arn:aws:iam::590183844603:role/AmazonEKSClusterPolicy"
+          role-duration-seconds: 1200
+
+      - name: Checkout
+        uses: actions/checkout@v4
+    
+        # Creates an Nginx server and related configuration
+      - name: Deploy Nginx
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name commit-cluster
+          kubectl apply -f nginx.yaml
+      
+        # Creates Kubernetes API resources that are not Nginx-related
+      - name: Terraform Apply Resources
+        run: |
+          terraform init
+          terraform apply --auto-approve --var postgres_username=${{ secrets.POSTGRES_USER }} --var postgres_password=${{ secrets.POSTGRES_PASSWORD }}
+
+        

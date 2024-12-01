@@ -1,20 +1,3 @@
-resource "kubernetes_service" "nginx-service" {
-  depends_on = [kubernetes_deployment.nginx]
-  metadata {
-    name = "nginx-service"
-  }
-  spec {
-    selector = {
-      app = "nginx"
-    }
-    port {
-      port        = 8080
-      target_port = 80
-    }
-    type = "LoadBalancer"
-  }
-}
-
 resource "kubernetes_service" "postgresql-service" {
   depends_on = [kubernetes_stateful_set.postgresql]
   metadata {

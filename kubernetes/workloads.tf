@@ -1,52 +1,5 @@
-resource "kubernetes_deployment" "nginx" {
-  depends_on = [kubernetes_deployment.crud, kubernetes_service.crud-service]
-  metadata {
-    namespace = "default"
-    name      = "nginx-deployment"
-    labels = {
-      app = "nginx"
-    }
-  }
-
-  spec {
-    replicas = 1
-
-    selector {
-      match_labels = {
-        app = "nginx"
-      }
-    }
-
-    template {
-      metadata {
-        labels = {
-          app = "nginx"
-        }
-      }
-
-      spec {
-        container {
-          image = "public.ecr.aws/o3q3p0r1/nginx:latest"
-          name  = "nginx"
-
-          resources {
-            limits = {
-              cpu    = "0.5"
-              memory = "512Mi"
-            }
-            requests = {
-              cpu    = "250m"
-              memory = "50Mi"
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-
 resource "kubernetes_deployment" "crud" {
+  depends_on = [ kubernetes_secret_v1.postgres ]
   metadata {
     namespace = "default"
     name      = "crud-deployment"
@@ -73,8 +26,11 @@ resource "kubernetes_deployment" "crud" {
 
       spec {
         container {
-          image = "public.ecr.aws/o3q3p0r1/crud:latest"
+          image = "public.ecr.aws/o3q3p0r1/crud:moveo"
           name  = "crud"
+          port {
+            container_port = 5000
+          }
           env_from {
             secret_ref {
               name = "postgresql-secret"
@@ -99,6 +55,7 @@ resource "kubernetes_deployment" "crud" {
 
 
 resource "kubernetes_stateful_set" "postgresql" {
+  depends_on = [ kubernetes_secret_v1.postgres ]
   metadata {
     name = "postgresql"
     labels = {
@@ -108,7 +65,7 @@ resource "kubernetes_stateful_set" "postgresql" {
   }
 
   spec {
-    replicas     = 2
+    replicas     = 1
     service_name = "postgresql"
 
     selector {
@@ -124,7 +81,6 @@ resource "kubernetes_stateful_set" "postgresql" {
       }
 
       spec {
-        # service_account_name = "postgresql"
         container {
           name  = "postgresql"
           image = "postgres:latest"

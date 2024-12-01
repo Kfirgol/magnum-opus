@@ -1,10 +1,9 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import psycopg2
 from os import getenv
 
 app = Flask(__name__)
 
-# PostgreSQL connection parameters
 conn = psycopg2.connect(
     host=getenv("POSTGRES_SERVICE"),
     database=getenv("POSTGRES_DB"),
@@ -24,7 +23,12 @@ def fetch_query(query, params=None):
         cursor.execute(query, params)
         return cursor.fetchall()
 
-# Create the table if not exists
+
+@app.route('/', methods=['GET'])
+def hello_commit():
+    return render_template('index.html')
+
+
 @app.route('/create_table')
 def create_table():
     execute_query("""
